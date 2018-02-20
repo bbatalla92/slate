@@ -31,8 +31,11 @@
 
 ```json
 {
+    
+    "status": {
     "message": "Success",
-    "status": "Success",
+    "success": true
+    },
     "content": {
         "id": "jLApbXN2ItRFa72jSXZJ21uFt",
         "last_name": "Bat",
@@ -46,7 +49,8 @@
         "bio": "I am the real user",
         "lat": 39.941209,
         "lng": -75.1664449,
-        "stripe_id": "cus_2F3G4SI5f1AoG7",
+        "stripe_customer_id": "cus_2F3G4SI5f1AoG7",
+        "stripe_account_id": "cus_2F3G4SI5f1AoG7",
         "first_name": "Bren",
         "city": "Philadelphia",
         "country": "US",
@@ -70,33 +74,34 @@ This endpoint will create a new user in the database
 
 ### User Public or Private Parameters
 
-Parameter | Required | Type     | Description
---------- | -------  | ------- | ------- 
-id  | TRUE | String | Unique Id that firebase generates for each new user.
-first_name | TRUE | String | First name of user
-last_name| TRUE | String | Last Name of User
-email| TRUE | String | Email of user 
-phone_number| FALSE | String | Phone number of user
-birth_date | FALSE | Number (EPOCH) | Date of birth of user, Min age: 18
-street | FALSE | String | street address of user
-email_verified | FALSE | Boolean | Has user confirmed their email by recieving the email lendet send them.
-phone_verified | FALSE | String | Has the user input the verification code that lendet sent them
-lender | FALSE | Boolean | Is the user renting out items
-bio | FALSE | String | Description the user wants every to know about them
-lat | FALSE | Number | Latitude of the users home address
-lng | FALSE | Number | Longitude of the users home address
-stripe_id | FALSE | String | Stripe Id of user, **AUTO GENERATED**
-city | FALSE | String | Home city of user 
-country | FALSE | String| Home country of user
-state | FALSE | String | Home state of user (US ONLY)
-zipcode | FALSE | String | Postal code of user
-rating| FALSE | Number | Rating of the user made by other people. Calculated on new reviews 
-last_initial | FALSE | String | Initial of last name. **AUTO GENERATED**
-created | FALSE | String | Date when user signed up.  **AUTO GENERATED**
-total_reviews | FALSE | Number | Total number of reviews the user has gotten
-image | FALSE | String/Blob/Base 64 Encoding | Users Image
-disabled | FALSE | Boolean | Is the users account disabled
-gender | FALSE | Boolean | Gender of user
+Parameter | Required | Type     | Description | Public
+--------- | -------  | ------- | ------- | ------- 
+id  | TRUE | String | Unique Id that firebase generates for each new user. | TRUE
+first_name | TRUE | String | First name of user | TRUE
+last_name| TRUE | String | Last Name of User | FALSE
+email| TRUE | String | Email of user  | FALSE
+phone_number| FALSE | String | Phone number of user | FALSE
+birth_date | FALSE | Number (EPOCH) | Date of birth of user, Min age: 18 | FALSE
+street | FALSE | String | street address of user | FALSE
+email_verified | FALSE | Boolean | Has user confirmed their email by recieving the email lendet send them. | TRUE
+phone_verified | FALSE | String | Has the user input the verification code that lendet sent them | TRUE
+lender | FALSE | Boolean | Is the user renting out items | TRUE
+bio | FALSE | String | Description the user wants every to know about them | TRUE
+lat | FALSE | Number | Latitude of the users home address | FALSE
+lng | FALSE | Number | Longitude of the users home address | FALSE
+stripe_customer_id | FALSE | String | Stripe customer Id of user, **AUTO GENERATED**, Allows cards to be charged (for renters) | FALSE
+stripe_account_id | FALSE | String | Stripe Id of user, **AUTO GENERATED**, Allows money to be deposited into bank account (for lenders) | FALSE
+city | FALSE | String | Home city of user  | TRUE
+country | FALSE | String| Home country of user | TRUE
+state | FALSE | String | Home state of user (US ONLY) | FALSE
+zipcode | FALSE | String | Postal code of user | FALSE
+rating| FALSE | Number | Rating of the user made by other people. Calculated on new reviews | TRUE 
+last_initial | FALSE | String | Initial of last name. **AUTO GENERATED** | TRUE
+created | FALSE | String | Date when user signed up.  **AUTO GENERATED** | TRUE
+total_reviews | FALSE | Number | Total number of reviews the user has gotten | TRUE
+image | FALSE | String/Blob/Base 64 Encoding | Users Image | TRUE
+disabled | FALSE | Boolean | Is the users account disabled | FALSE
+gender | FALSE | Boolean | Gender of user | FALSE
 
 ## Get User
 ```javascript
@@ -108,8 +113,10 @@ gender | FALSE | Boolean | Gender of user
 
 ```json
 {
-    "message": "Success",
-    "status": "Success",
+    "status": {
+        "message": "Success",
+        "success": true
+        },
     "content": {
         "id": "jLApbXN2ItRFa72jSXZJ21uFt",
         "last_name": "Bat",
@@ -123,7 +130,8 @@ gender | FALSE | Boolean | Gender of user
         "bio": "I am the real user",
         "lat": 39.941209,
         "lng": -75.1664449,
-        "stripe_id": "cus_2F3G4SI5f1AoG7",
+        "stripe_customer_id": "cus_2F3G4SI5f1AoG7",
+        "stripe_account_id": "cus_2F3G4SI5f1AoG7",
         "first_name": "Bren",
         "city": "Philadelphia",
         "country": "US",
@@ -146,7 +154,7 @@ gender | FALSE | Boolean | Gender of user
 ```json
 {
     "message": "No User Found",
-    "status": "Failed"
+    "success": false
 }
 ```
 
@@ -171,9 +179,9 @@ Parameters | . | .
 id  | first_name | image
 email_verified | phone_verified | lender
 bio | lat | lng
-stripe_id | city | country 
+city | country | total_reviews 
 state | zipcode | rating
-last_initial | created | total_reviews 
+last_initial | created 
 
 ## Update User
 
@@ -219,4 +227,30 @@ Upon initial **DELETE** the account will not be deleted, but instead disabled.
 Parameter | Description
 --------- | -----------
 ID | The ID of the user to be deleted
+
+## Convert user to Lender
+
+```javascript
+"POST api/v1/users/stripe/account"
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "ssn_last_four" : "1234"
+}
+```
+
+This endpoint turns a normal renting user into a lender.  Requires last four digits of users social security.  Endpoint will 
+generates a stripe account id.
+### HTTP Request
+
+`POST api/v1/users/stripe/account`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+ssn_last_four | Users last four digits of their social security number
 
