@@ -102,6 +102,7 @@ total_reviews | FALSE | Number | Total number of reviews the user has gotten | T
 image | FALSE | String/Blob/Base 64 Encoding | Users Image | TRUE
 disabled | FALSE | Boolean | Is the users account disabled | FALSE
 gender | FALSE | Boolean | Gender of user | FALSE
+connected_bank | FALSE | String | Stripe Account Id of lenders account | FALSE
 
 ## Get User
 ```javascript
@@ -143,7 +144,8 @@ gender | FALSE | Boolean | Gender of user | FALSE
         "created": "2017-12-29T01:05:20.304Z",
         "total_reviews": 0,
         "image": "https://res.cloudinary.com/hko0mswnc/image/upload/q_auto/f_auto/v1514494289/jLApbXN2ItRFa72jSXZJ21uFtwm1.png",
-        "disabled": false
+        "disabled": false,
+        "connected_bank":"b_34jkhj343khb3j"
     }
 }
 ```
@@ -254,3 +256,69 @@ Parameter | Description
 --------- | -----------
 ssn_last_four | Users last four digits of their social security number
 
+## Add bank account to lenders account
+
+```javascript
+"POST api/v1/users/stripe/bankAccount"
+
+```
+
+```json
+
+{
+  "account_number" : "000123456789",
+  "routing_number": "110000000"
+}
+
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+    "content": "<USER Object>",
+    "status": {
+        "success": true,
+        "message": "Success"
+    }
+}
+```
+
+This endpoint attaches a **checking bank account** to a lenders account.  
+### HTTP Request
+
+`POST api/v1/users/stripe/bankAccount`
+
+### Request Parameters
+
+Parameter | Description
+--------- | -----------
+account_number | Checking account number
+routing_number | Checking account routing number
+
+## Get bank account attached to lenders account
+
+```javascript
+"GET api/v1/users/stripe/bankAccount"
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+    "content": {
+        "bank_name": "STRIPE TEST BANK",
+        "account_number_last_4": "6789",
+        "routing_number": "110000000"
+    },
+    "status": {
+        "success": true,
+        "message": "Success"
+    }
+}
+```
+
+This endpoint retrieves an attached **checking bank account** of a lenders account.  
+### HTTP Request
+
+`GET api/v1/users/stripe/bankAccount`
